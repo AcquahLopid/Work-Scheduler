@@ -41,7 +41,6 @@ for (let hour = startOfDate; hour.isBefore(endOfDate); hour = hour.add(1, 'hour'
   hourContainer.appendChild(hourElement); // append the hour element to the container
   
 }
-
   // Loop through all textarea elements
 document.querySelectorAll('textarea').forEach((textarea) => {
     // Get the ID of the textarea
