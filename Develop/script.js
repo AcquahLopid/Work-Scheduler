@@ -1,18 +1,3 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
-
-// using jquery to make the screen scrollable
-$('a[href^="#"]').on('click', function(event) {
-    var target = $(this.getAttribute('href'));
-  if( target.length ) {
-      event.preventDefault();
-      $('html, body').animate({
-          scrollTop: target.offset().top
-      }, 1000);
-  }
-});
-
 // sets clock that tells the day month number day and exact time
 function tickingClock(){
 setInterval(() => {
@@ -22,54 +7,48 @@ setInterval(() => {
 }
 tickingClock();
 
-var dayStart = dayjs().startOf('day'); // set the start of the day
-var currentTime = dayjs(); // get the current time
-var pastTime = document.getElementsByClassName('past');
+var currentHour = dayjs(); // get the current time
+var hourContainer = document.querySelector('.hour'); // get the container element
 
-for (let i = 0; i <= 23; i++) {
-  var time = dayStart.add(i, 'hour'); // set the time for each hour of the day
+var date = dayjs(); // get the current date
+var startOfDate = date.startOf('day'); // get the start of the current day
+var endOfDate = date.endOf('day'); // get the end of the current day
 
-
-//   loop that iterates through times of the day and signifies which ones are past,present or future
-  if (currentTime.isBefore(time)) {
-    console.log(`${time.format("h A")} is in the future`);
-    pastTime.style.color = 'blue';
-  } else if (currentTime.isAfter(time)) {
-    console.log(`${time.format("h A")} is in the past`);
-  } else {
-    console.log(`${time.format("h A")} is the current time`);
+for (let hour = startOfDate; hour.isBefore(endOfDate); hour = hour.add(1, 'hour')) {
+  var hourElement = document.createElement('div');
+  hourElement.classList.add('hour'); // add a class for styling
+  hourElement.innerText = hour.format('hA');
+  hourElement.dataset.time = hour.toISOString();
+  
+  var textareaElement = document.createElement('textarea');
+  textareaElement.classList.add('hour-textarea'); // add a class for styling
+  textareaElement.dataset.time = hour.toISOString();
+  var storedNote = localStorage.getItem(hour.toISOString()); // check if a note was previously stored for this hour
+  if (storedNote) {
+    textareaElement.value = storedNote;
   }
+  
+  if (hour.isBefore(currentHour, 'hour')) {
+    hourElement.classList.add('past'); // add a class for styling
+    // currentHour.style.color = "red";
+  } else if (hour.isSame(currentHour, 'hour')) {
+    hourElement.classList.add('present'); // add a class for styling
+  } else {
+    hourElement.classList.add('future'); // add a class for styling
+  }
+  
+  hourElement.appendChild(textareaElement); // append the textarea element to the hour element
+  hourContainer.appendChild(hourElement); // append the hour element to the container
+  
 }
 
-window.addEventListener('scroll', function() {
-    // Check if the user has scrolled to the bottom of the page
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-      // Create a new block element
-      var block = document.createElement('div');
-      block.className = 'block';
-      block.innerHTML = '<p>Some content</p>';
-      
-      // Append the new block to the page
-      document.body.appendChild(block);
+  // Loop through all textarea elements
+document.querySelectorAll('textarea').forEach((textarea) => {
+    // Get the ID of the textarea
+    var textareaId = textarea.id;
+    // Check if there is saved data for this textarea in localStorage
+    if (localStorage.getItem(textareaId)) {
+      // Retrieve the saved data and set it as the value of the textarea
+      textarea.value = localStorage.getItem(textareaId);
     }
   });
-    // TODO: Add a listener for click events on the save button. This code should
-    // use the id in the containing time-block as a key to save the user input in
-    // local storage. HINT: What does `this` reference in the click listener
-    // function? How can DOM traversal be used to get the "hour-x" id of the
-    // time-block containing the button that was clicked? How might the id be
-    // useful when saving the description in local storage?
-    //
-    // TODO: Add code to apply the past, present, or future class to each time
-    // block by comparing the id to the current hour. HINTS: How can the id
-    // attribute of each time-block be used to conditionally add or remove the
-    // past, present, and future classes? How can Day.js be used to get the
-    // current hour in 24-hour time?
-    //
-    // TODO: Add code to get any user input that was saved in localStorage and set
-    // the values of the corresponding textarea elements. HINT: How can the id
-    // attribute of each time-block be used to do this?
-    //
-    // TODO: Add code to display the current date in the header of the page.
-
-
