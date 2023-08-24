@@ -1,5 +1,6 @@
 # Work-Scheduler
 
+[Deployed Website](https://acquahlopid.github.io/Work-Scheduler/)
 ## Technology Used
 
 | Technology Used         | Resource URL  |
